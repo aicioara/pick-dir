@@ -1,9 +1,11 @@
 const fs = require('fs');
+const path = require('path');
+const process = require('process');
 
-const { h, render, Component, Text } = require('ink');
+const { h, Component, Text } = require('ink');
 const SelectInput = require('ink-select-input');
 
-class Counter extends Component {
+class UI extends Component {
     constructor() {
         super();
 
@@ -14,14 +16,27 @@ class Counter extends Component {
 
         this.internal = {
             selectionColor: { hex: "#00ffff" }, // Cyan
+            currDir: process.cwd(),
         }
+
+        console.error("Started")
+
+        process.on('exit', () => {
+            console.log(this.internal.currDir)
+        });
+
     }
 
     render() {
         const attr = {
             items: this.state.dirOptions,
             onSelect: item => {
-                console.log(item)
+                const newFolder = item.value;
+                const oldPath = this.internal.currDir;
+                const newPath = path.resolve(oldPath, newFolder);
+                process.chdir(newPath);
+                this.internal.currDir = newPath;
+                this._getDirs();
             },
             indicatorComponent: (props) => {
                 const color = props.isSelected ? this.internal.selectionColor : {}
@@ -33,11 +48,7 @@ class Counter extends Component {
             }
         };
 
-        return <div>
-            <Text>
-                <SelectInput {...attr} />
-            </Text>
-        </div>
+        return <SelectInput {...attr} />
     }
 
     componentDidMount() {
@@ -45,7 +56,7 @@ class Counter extends Component {
     }
 
     _getDirs() {
-        const dirs = fs.readdirSync('.')
+        const dirs = ['..'].concat(fs.readdirSync('.'))
         const dirOptions = dirs.map(dirName => ({
             label: dirName,
             value: dirName,
@@ -54,4 +65,4 @@ class Counter extends Component {
     }
 }
 
-module.exports = Counter;
+module.exports = UI;
