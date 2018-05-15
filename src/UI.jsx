@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const process = require('process');
 
 const { h, Component, Text } = require('ink');
 const SelectInput = require('ink-select-input');
@@ -16,12 +15,12 @@ class UI extends Component {
 
         this.internal = {
             selectionColor: { hex: "#00ffff" }, // Cyan
+            dirColor: { hex: "#00ff00" }, // Green
             currDir: process.cwd(),
         }
 
-        console.error("Started")
-
         process.on('exit', () => {
+            console.error('\x1Bc');
             console.log(this.internal.currDir)
         });
 
@@ -40,15 +39,20 @@ class UI extends Component {
             },
             indicatorComponent: (props) => {
                 const color = props.isSelected ? this.internal.selectionColor : {}
-                return <Text {...color}>{props.isSelected ? '>' : ''}</Text>
+                return h(Text, color, props.isSelected ? '> ' : ' ')
             },
             itemComponent: (props) => {
-                const color = props.isSelected ? this.internal.selectionColor : {}
-                return <Text {...color}> {props.label} </Text>
-            }
+                let color = {};
+                if (props.isSelected) {
+                    color = this.internal.selectionColor;
+                } else if (props.type === 'dir') {
+                    color = this.internal.dirColor
+                }
+                return h(Text, color, props.value);
+            },
         };
 
-        return <SelectInput {...attr} />
+        return h(SelectInput, attr);
     }
 
     componentDidMount() {
@@ -60,7 +64,8 @@ class UI extends Component {
         const dirOptions = dirs.map(dirName => ({
             label: dirName,
             value: dirName,
-        }))
+            type: fs.lstatSync(dirName).isDirectory() ? "dir" : "file",
+        })).sort((a, b) => a.type === 'dir' ? -1 : b.type === 'dir' ? 1 : 0)
         this.setState({dirOptions})
     }
 }
