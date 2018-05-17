@@ -36,7 +36,7 @@ class Navigator extends Component {
                 } else {
                     style = this.props.fileStyle;
                 }
-                return <Color {...style}>{isSelected ? '>' : ' '} </Color>;
+                return h(Color, style, isSelected ? '>' : ' ' , ' ')
             },
             itemComponent: ({isSelected, children, item}) => {
                 let style = {}
@@ -45,9 +45,9 @@ class Navigator extends Component {
                 } else {
                     style = this.props.fileStyle;
                 }
-                return <Color {...style}>{children}</Color>
+                return h(Color, style, children);
             },
-            statusComponent: () => <span></span>
+            statusComponent: () => h('span')
         };
 
         return h(QuickSearch, attr);
