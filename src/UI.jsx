@@ -1,29 +1,24 @@
 const fs = require('fs');
 const path = require('path');
 
+const hasAnsi = require('has-ansi');
 const { h, Component, Color } = require('ink');
 const QuickSearch = require('ink-quicksearch');
 
-class UI extends Component {
+class Navigator extends Component {
     constructor() {
         super();
-
-        this.state = {
-            dirOptions: [],
-            console: "Console",
-        };
+        this.state = Navigator.initialState;
+        this.handleKeyPress = this.handleKeyPress.bind(this);
 
         this.internal = {
-            selectionColor: { hex: "#00ffff" }, // Cyan
-            dirColor: { hex: "#00ff00" }, // Green
             currDir: process.cwd(),
+            hasTyped: false,
         }
 
         process.on('exit', () => {
-            // console.error('\x1Bc');
             console.log(this.internal.currDir)
         });
-
     }
 
     render() {
@@ -31,36 +26,63 @@ class UI extends Component {
             items: this.state.dirOptions,
             onSelect: item => {
                 const newFolder = item.value;
-                const oldPath = this.internal.currDir;
-                const newPath = path.resolve(oldPath, newFolder);
-                process.chdir(newPath);
-                this.internal.currDir = newPath;
-                this._getDirs();
+                const newPath = path.resolve(this.internal.currDir, newFolder);
+                this.changeDir(newPath);
             },
-            // indicatorComponent: (props) => {
-            //     const color = props.isSelected ? this.internal.selectionColor : {}
-            //     return h(Text, color, props.isSelected ? '> ' : ' ')
-            // },
-            // itemComponent: (props) => {
-            //     let color = {};
-            //     if (props.isSelected) {
-            //         color = this.internal.selectionColor;
-            //     } else if (props.type === 'dir') {
-            //         color = this.internal.dirColor
-            //     }
-            //     return h(Text, color, props.value);
-            // },
+            indicatorComponent: ({isSelected, item}) => {
+                let style = {}
+                if (item.type === 'dir') {
+                    style = this.props.dirStyle;
+                } else {
+                    style = this.props.fileStyle;
+                }
+                return <Color {...style}>{isSelected ? '>' : ' '} </Color>;
+            },
+            itemComponent: ({isSelected, children, item}) => {
+                let style = {}
+                if (item.type === 'dir') {
+                    style = this.props.dirStyle;
+                } else {
+                    style = this.props.fileStyle;
+                }
+                return <Color {...style}>{children}</Color>
+            },
         };
 
         return h(QuickSearch, attr);
-        // return h(SelectInput, attr);
     }
 
     componentDidMount() {
-        this._getDirs();
+        this.getDirs();
+        process.stdin.on('keypress', this.handleKeyPress);
     }
 
-    _getDirs() {
+    componentWillUnmount() {
+        process.stdin.removeListener('keypress', this.handleKeyPress);
+    }
+
+    handleKeyPress(ch, key) {
+        if (key.name === 'return') {
+            this.internal.hasTyped = false;
+        } else if (key.name === 'backspace') {
+            if (!this.internal.hasTyped) {
+                const newPath = path.resolve(this.internal.currDir, '..');
+                this.changeDir(newPath)
+            }
+        } else if (hasAnsi(key.sequence)) {
+            // No-op
+        } else {
+            this.internal.hasTyped = true;
+        }
+    }
+
+    changeDir(newPath) {
+        process.chdir(newPath);
+        this.internal.currDir = newPath;
+        this.getDirs();
+    }
+
+    getDirs() {
         const files = ['..'].concat(fs.readdirSync('.'))
         const dirOptions = files.map(dirName => {
             const isDir = fs.lstatSync(dirName).isDirectory();
@@ -69,9 +91,33 @@ class UI extends Component {
                 value: isDir ? dirName : "",
                 type: isDir ? "dir" : "file",
             }
-        }).sort((a, b) => a.type === 'dir' ? -1 : b.type === 'dir' ? 1 : 0)
+        }).sort((a, b) => {
+            if (a.type === 'dir' && b.type !== 'dir') {
+                return -1;
+            }
+            if (a.type !== 'dir' && b.type === 'dir') {
+                return 1;
+            }
+            if (a.label < b.label) {
+                return -1;
+            }
+            if (a.label > b.label) {
+                return 1;
+            }
+            return 0;
+        })
         this.setState({dirOptions})
     }
 }
 
-module.exports = UI;
+Navigator.defaultProps = {
+    dirStyle: { hex: '#ff0000' },
+    fileStyle: { hex: '#ffffff' },
+    highlightStyle: {},
+};
+
+Navigator.initialState = {
+    dirOptions : [],
+}
+
+module.exports = Navigator;
