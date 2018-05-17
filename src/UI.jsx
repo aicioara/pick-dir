@@ -47,6 +47,7 @@ class Navigator extends Component {
                 }
                 return <Color {...style}>{children}</Color>
             },
+            statusComponent: () => <span></span>
         };
 
         return h(QuickSearch, attr);
@@ -111,8 +112,8 @@ class Navigator extends Component {
 }
 
 Navigator.defaultProps = {
-    dirStyle: { hex: '#ff0000' },
-    fileStyle: { hex: '#ffffff' },
+    dirStyle: { hex: '#268BD2' },
+    fileStyle: { hex: '#888888' },
     highlightStyle: {},
 };
 
