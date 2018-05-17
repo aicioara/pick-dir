@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const { h, Component, Text } = require('ink');
-const SelectInput = require('ink-select-input');
+const { h, Component, Color } = require('ink');
+const QuickSearch = require('ink-quicksearch');
 
 class UI extends Component {
     constructor() {
@@ -20,14 +20,14 @@ class UI extends Component {
         }
 
         process.on('exit', () => {
-            console.error('\x1Bc');
+            // console.error('\x1Bc');
             console.log(this.internal.currDir)
         });
 
     }
 
     render() {
-        const attr = {
+        let attr = {
             items: this.state.dirOptions,
             onSelect: item => {
                 const newFolder = item.value;
@@ -37,22 +37,23 @@ class UI extends Component {
                 this.internal.currDir = newPath;
                 this._getDirs();
             },
-            indicatorComponent: (props) => {
-                const color = props.isSelected ? this.internal.selectionColor : {}
-                return h(Text, color, props.isSelected ? '> ' : ' ')
-            },
-            itemComponent: (props) => {
-                let color = {};
-                if (props.isSelected) {
-                    color = this.internal.selectionColor;
-                } else if (props.type === 'dir') {
-                    color = this.internal.dirColor
-                }
-                return h(Text, color, props.value);
-            },
+            // indicatorComponent: (props) => {
+            //     const color = props.isSelected ? this.internal.selectionColor : {}
+            //     return h(Text, color, props.isSelected ? '> ' : ' ')
+            // },
+            // itemComponent: (props) => {
+            //     let color = {};
+            //     if (props.isSelected) {
+            //         color = this.internal.selectionColor;
+            //     } else if (props.type === 'dir') {
+            //         color = this.internal.dirColor
+            //     }
+            //     return h(Text, color, props.value);
+            // },
         };
 
-        return h(SelectInput, attr);
+        return h(QuickSearch, attr);
+        // return h(SelectInput, attr);
     }
 
     componentDidMount() {
@@ -60,12 +61,15 @@ class UI extends Component {
     }
 
     _getDirs() {
-        const dirs = ['..'].concat(fs.readdirSync('.'))
-        const dirOptions = dirs.map(dirName => ({
-            label: dirName,
-            value: dirName,
-            type: fs.lstatSync(dirName).isDirectory() ? "dir" : "file",
-        })).sort((a, b) => a.type === 'dir' ? -1 : b.type === 'dir' ? 1 : 0)
+        const files = ['..'].concat(fs.readdirSync('.'))
+        const dirOptions = files.map(dirName => {
+            const isDir = fs.lstatSync(dirName).isDirectory();
+            return {
+                label: dirName,
+                value: isDir ? dirName : "",
+                type: isDir ? "dir" : "file",
+            }
+        }).sort((a, b) => a.type === 'dir' ? -1 : b.type === 'dir' ? 1 : 0)
         this.setState({dirOptions})
     }
 }
