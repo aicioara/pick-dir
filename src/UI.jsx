@@ -4,6 +4,7 @@ const path = require('path');
 const hasAnsi = require('has-ansi');
 const { h, Component, Color } = require('ink');
 const QuickSearch = require('ink-quicksearch');
+const termSize = require('term-size');
 
 class Navigator extends Component {
     constructor() {
@@ -29,6 +30,8 @@ class Navigator extends Component {
                 const newPath = path.resolve(this.internal.currDir, newFolder);
                 this.changeDir(newPath);
             },
+            limit: termSize().rows - 2, // One for clear screen, one for cursor
+            forceMatchingQuery: true,
             indicatorComponent: ({isSelected, item}) => {
                 let style = {}
                 if (item.type === 'dir') {
@@ -47,7 +50,11 @@ class Navigator extends Component {
                 }
                 return h(Color, style, children);
             },
-            statusComponent: () => h('span')
+            highlightComponent: ({children}) => {
+                let style = this.props.highlightStyle;
+                return h(Color, style, children);
+            },
+            statusComponent: () => h('span'), // no-op
         };
 
         return h(QuickSearch, attr);
@@ -112,9 +119,9 @@ class Navigator extends Component {
 }
 
 Navigator.defaultProps = {
-    dirStyle: { hex: '#268BD2' },
+    dirStyle: { keyword: 'blue' },
     fileStyle: { hex: '#888888' },
-    highlightStyle: {},
+    highlightStyle: { bgKeyword: 'green', keyword: 'white' },
 };
 
 Navigator.initialState = {
