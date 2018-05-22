@@ -13,7 +13,7 @@
   "dependencies": {
     "has-ansi": "3.0.0",
     "ink": "0.5.0",
-    "ink-quicksearch": "0.2.1",
+    "ink-quicksearch": "0.3.0",
     "term-size": "1.2.0"
   },
   "devDependencies": {
