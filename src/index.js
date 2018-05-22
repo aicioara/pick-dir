@@ -1,8 +1,5 @@
 #!/usr/bin/env node
 
-// Clear screen first thing to improve UX
-console.error('\x1Bc');
-
 // Force color to allow stderr color writing
 process.env.FORCE_COLOR = 1;
 
@@ -157,5 +154,10 @@ Navigator.initialState = {
     initialSelectionIndex: 0,
 }
 
+function main() {
+    // Clear Screen
+    console.error('\x1Bc');
+    render(h(Navigator), process.stderr);
+}
 
-render(h(Navigator), process.stderr);
+main();
