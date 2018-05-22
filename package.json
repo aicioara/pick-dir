@@ -1,7 +1,7 @@
 {
-  "name": "folder_picker",
+  "name": "pick-dir",
   "version": "0.1.0",
-  "description": "This is a repository containing boilerplate code to be copy pasted",
+  "description": "Faster command line folder navigation",
   "main": "src/index.js",
   "author": {
     "name": "Andrei Cioara",
@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aicioara/dirs.git"
+    "url": "git+https://github.com/aicioara/pick-dir.git"
   },
   "keywords": [
     "bash",
@@ -26,9 +26,9 @@
     "shell"
   ],
   "bugs": {
-    "url": "https://github.com/aicioara/dirs/issues"
+    "url": "https://github.com/aicioara/pick-dir/issues"
   },
-  "homepage": "https://github.com/aicioara/dirs#readme",
+  "homepage": "https://github.com/aicioara/pick-dir#readme",
   "dependencies": {
     "has-ansi": "3.0.0",
     "ink": "0.5.0",
