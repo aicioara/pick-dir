@@ -2,23 +2,22 @@ const fs = require('fs');
 const path = require('path');
 
 const hasAnsi = require('has-ansi');
-const { h, Component, Color } = require('ink');
+const { h, Component, Color, br } = require('ink');
 const QuickSearch = require('ink-quicksearch');
 const termSize = require('term-size');
 
 class Navigator extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = Navigator.initialState;
         this.handleKeyPress = this.handleKeyPress.bind(this);
 
         this.internal = {
-            currDir: process.cwd(),
             hasTyped: false,
         }
 
         process.on('exit', () => {
-            console.log(this.internal.currDir)
+            console.log(this.state.currDir)
         });
     }
 
@@ -27,11 +26,12 @@ class Navigator extends Component {
             items: this.state.dirOptions,
             onSelect: item => {
                 const newFolder = item.value;
-                const newPath = path.resolve(this.internal.currDir, newFolder);
+                const newPath = path.resolve(this.state.currDir, newFolder);
                 this.changeDir(newPath);
             },
-            limit: termSize().rows - 2, // One for clear screen, one for cursor
+            limit: termSize().rows - 3, // One for clear screen, one for cursor, one for header
             forceMatchingQuery: true,
+            clearQueryChars: this.props.clearQueryChars,
             indicatorComponent: ({isSelected, item}) => {
                 let style = {}
                 if (item.type === 'dir') {
@@ -57,7 +57,11 @@ class Navigator extends Component {
             statusComponent: () => h('span'), // no-op
         };
 
-        return h(QuickSearch, attr);
+        return h('span', null,
+            h(Color, this.props.currFolderStyle, this.state.currDir),
+            h("br"),
+            h(QuickSearch, attr),
+        );
     }
 
     componentDidMount() {
@@ -70,11 +74,13 @@ class Navigator extends Component {
     }
 
     handleKeyPress(ch, key) {
-        if (key.name === 'return') {
+        if (this.props.clearQueryChars.indexOf(ch) !== -1) {
+            this.internal.hasTyped = false;
+        } else if (key.name === 'return') {
             this.internal.hasTyped = false;
         } else if (key.name === 'backspace') {
             if (!this.internal.hasTyped) {
-                const newPath = path.resolve(this.internal.currDir, '..');
+                const newPath = path.resolve(this.state.currDir, '..');
                 this.changeDir(newPath)
             }
         } else if (hasAnsi(key.sequence)) {
@@ -86,8 +92,8 @@ class Navigator extends Component {
 
     changeDir(newPath) {
         process.chdir(newPath);
-        this.internal.currDir = newPath;
         this.getDirs();
+        this.setState({currDir: newPath});
     }
 
     getDirs() {
@@ -119,12 +125,18 @@ class Navigator extends Component {
 }
 
 Navigator.defaultProps = {
+    currFolderStyle: { keyword: 'red' },
     dirStyle: { keyword: 'blue' },
     fileStyle: { hex: '#888888' },
     highlightStyle: { bgKeyword: 'green', keyword: 'white' },
+    clearQueryChars: [
+        '\u0015', // Ctrl + U
+        '\u0017', // Ctrl + W
+    ],
 };
 
 Navigator.initialState = {
+    currDir: process.cwd(),
     dirOptions : [],
 }
 
