@@ -32,6 +32,7 @@ class Navigator extends Component {
             limit: termSize().rows - 3, // One for clear screen, one for cursor, one for header
             forceMatchingQuery: true,
             clearQueryChars: this.props.clearQueryChars,
+            initialSelectionIndex: this.state.initialSelectionIndex,
             indicatorComponent: ({isSelected, item}) => {
                 let style = {}
                 if (item.type === 'dir') {
@@ -65,7 +66,7 @@ class Navigator extends Component {
     }
 
     componentDidMount() {
-        this.getDirs();
+        this.changeDir(process.cwd())
         process.stdin.on('keypress', this.handleKeyPress);
     }
 
@@ -92,7 +93,13 @@ class Navigator extends Component {
 
     changeDir(newPath) {
         process.chdir(newPath);
-        this.getDirs();
+        const dirOptions = this.getDirs();
+        if (path.relative(this.state.currDir, newPath) === '..') {
+            const initialSelectionIndex = dirOptions.map(d => d.label).indexOf(path.relative(newPath, this.state.currDir))
+            this.setState({initialSelectionIndex})
+        } else {
+            this.setState({initialSelectionIndex: 0})
+        }
         this.setState({currDir: newPath});
     }
 
@@ -121,11 +128,12 @@ class Navigator extends Component {
             return 0;
         })
         this.setState({dirOptions})
+        return dirOptions;
     }
 }
 
 Navigator.defaultProps = {
-    currFolderStyle: { keyword: 'red' },
+    currFolderStyle: { keyword: 'green' },
     dirStyle: { keyword: 'blue' },
     fileStyle: { hex: '#888888' },
     highlightStyle: { bgKeyword: 'green', keyword: 'white' },
@@ -136,8 +144,9 @@ Navigator.defaultProps = {
 };
 
 Navigator.initialState = {
-    currDir: process.cwd(),
+    currDir: '',
     dirOptions : [],
+    initialSelectionIndex: 0,
 }
 
 module.exports = Navigator;
