@@ -1,6 +1,6 @@
 # Pick Dir
 
-An User-Experience-focused visual alternative to `cd`, aimed at achieving faster folder navigtion.
+An User-Experience-focused visual alternative to `cd`, aimed at achieving faster folder navigation.
 
 
 ## Installation
@@ -10,10 +10,9 @@ Dependencies:
 - [NPM](https://www.npmjs.com/get-npm)
 
 ```bash
-npm install -g pick-dir
+npm install -g pick-dir # May need to be prefixed by sudo
 ```
 
-If the above does not work, prefix the entire command with sudo.
 
 ## Setup
 
@@ -34,11 +33,10 @@ Then source bashrc (`source ~/.bashrc`) and invoke using `d`
 - Navigate around using arrow keys.
 - Quickly select a folder by typing part of its name.
 - Enter folders using `Enter`. Exit folders using `Backspace`.
-- Once finished press `CTRL + C`
-- The current folder will be printed to stdout. Ideally this will be served as an argument to `cd`
+- Once finished press `CTRL + C` and the current folder will be printed to stdout. Ideally this will be served as an argument to `cd`
 
 
-## Keybinds
+## Keymap
 
 - `PageUp` / `PageDown` - Scroll up / down
 - `ArrowUp` / `ArrowDown` - Navigate through selection
