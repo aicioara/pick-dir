@@ -19,10 +19,10 @@ class Navigator extends Component {
 
         this.internal = {
             hasTyped: false,
-        }
+        };
 
         process.on('exit', () => {
-            console.log(this.state.currDir)
+            console.log(this.state.currDir);
         });
     }
 
@@ -39,16 +39,16 @@ class Navigator extends Component {
             clearQueryChars: this.props.clearQueryChars,
             initialSelectionIndex: this.state.initialSelectionIndex,
             indicatorComponent: ({isSelected, item}) => {
-                let style = {}
+                let style = {};
                 if (item.type === 'dir') {
                     style = this.props.dirStyle;
                 } else {
                     style = this.props.fileStyle;
                 }
-                return h(Color, style, isSelected ? '>' : ' ' , ' ')
+                return h(Color, style, isSelected ? '>' : ' ' , ' ');
             },
             itemComponent: ({children, item}) => {
-                let style = {}
+                let style = {};
                 if (item.type === 'dir') {
                     style = this.props.dirStyle;
                 } else {
@@ -65,13 +65,13 @@ class Navigator extends Component {
 
         return h('span', null,
             h(Color, this.props.currFolderStyle, this.state.currDir),
-            h("br"),
+            h('br'),
             h(QuickSearch, attr)
         );
     }
 
     componentDidMount() {
-        this.changeDir(process.cwd())
+        this.changeDir(process.cwd());
         process.stdin.on('keypress', this.handleKeyPress);
     }
 
@@ -87,7 +87,7 @@ class Navigator extends Component {
         } else if (key.name === 'backspace') {
             if (!this.internal.hasTyped) {
                 const newPath = path.resolve(this.state.currDir, '..');
-                this.changeDir(newPath)
+                this.changeDir(newPath);
             }
         } else if (hasAnsi(key.sequence)) {
             // No-op
@@ -100,23 +100,23 @@ class Navigator extends Component {
         process.chdir(newPath);
         const dirOptions = this.getDirs();
         if (path.relative(this.state.currDir, newPath) === '..') {
-            const initialSelectionIndex = dirOptions.map(d => d.label).indexOf(path.relative(newPath, this.state.currDir))
-            this.setState({initialSelectionIndex})
+            const initialSelectionIndex = dirOptions.map(d => d.label).indexOf(path.relative(newPath, this.state.currDir));
+            this.setState({initialSelectionIndex});
         } else {
-            this.setState({initialSelectionIndex: 0})
+            this.setState({initialSelectionIndex: 0});
         }
         this.setState({currDir: newPath});
     }
 
     getDirs() {
-        const files = ['..'].concat(fs.readdirSync('.'))
+        const files = ['..'].concat(fs.readdirSync('.'));
         const dirOptions = files.map(dirName => {
             const isDir = fs.lstatSync(dirName).isDirectory();
             return {
                 label: dirName,
-                value: isDir ? dirName : "",
-                type: isDir ? "dir" : "file",
-            }
+                value: isDir ? dirName : '',
+                type: isDir ? 'dir' : 'file',
+            };
         }).sort((a, b) => {
             if (a.type === 'dir' && b.type !== 'dir') {
                 return -1;
@@ -131,8 +131,8 @@ class Navigator extends Component {
                 return 1;
             }
             return 0;
-        })
-        this.setState({dirOptions})
+        });
+        this.setState({dirOptions});
         return dirOptions;
     }
 }
@@ -152,7 +152,7 @@ Navigator.initialState = {
     currDir: '',
     dirOptions : [],
     initialSelectionIndex: 0,
-}
+};
 
 function main() {
     // Clear Screen
