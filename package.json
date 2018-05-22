@@ -1,8 +1,8 @@
 {
   "name": "folder_picker",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "This is a repository containing boilerplate code to be copy pasted",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/main.js"
