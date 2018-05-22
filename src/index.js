@@ -7,7 +7,7 @@ const fs = require('fs');
 const path = require('path');
 
 const hasAnsi = require('has-ansi');
-const { h, render, Component, Color, br } = require('ink');
+const { h, render, Component, Color } = require('ink');
 const QuickSearch = require('ink-quicksearch');
 const termSize = require('term-size');
 
@@ -47,7 +47,7 @@ class Navigator extends Component {
                 }
                 return h(Color, style, isSelected ? '>' : ' ' , ' ')
             },
-            itemComponent: ({isSelected, children, item}) => {
+            itemComponent: ({children, item}) => {
                 let style = {}
                 if (item.type === 'dir') {
                     style = this.props.dirStyle;
@@ -66,7 +66,7 @@ class Navigator extends Component {
         return h('span', null,
             h(Color, this.props.currFolderStyle, this.state.currDir),
             h("br"),
-            h(QuickSearch, attr),
+            h(QuickSearch, attr)
         );
     }
 
