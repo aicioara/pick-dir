@@ -3,13 +3,30 @@
   "version": "0.1.0",
   "description": "This is a repository containing boilerplate code to be copy pasted",
   "main": "src/index.js",
+  "author": {
+    "name": "Andrei Cioara",
+    "email": "github@andreicioara.com",
+    "url": "http://andrei.cioara.me"
+  },
+  "license": "MIT",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/main.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aicioara/dirs.git"
+  },
+  "keywords": [
+    "bash",
+    "cd",
+    "navigator",
+    "shell"
+  ],
+  "bugs": {
+    "url": "https://github.com/aicioara/dirs/issues"
+  },
+  "homepage": "https://github.com/aicioara/dirs#readme",
   "dependencies": {
     "has-ansi": "3.0.0",
     "ink": "0.5.0",
