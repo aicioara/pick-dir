@@ -38,9 +38,9 @@ Then source bashrc (`source ~/.bashrc`) and invoke using `d`
 
 ## Keymap
 
-- `PageUp` / `PageDown` - Scroll up / down
-- `ArrowUp` / `ArrowDown` - Navigate through selection
-- `Backspace` - Move up one folder
-- `Enter` - Move inside selected folder
-- `CTRL + C` - Finish and print current folder to stdout
-- `CTRL + W` - Clear search
+- <kbd>PageUp</kbd> / <kbd>PageDown</kbd> - Scroll up / down
+- <kbd>ArrowUp</kbd> / <kbd>ArrowDown</kbd> - Navigate through selection
+- <kbd>Backspace</kbd> - Move up one folder
+- <kbd>Enter</kbd> - Move inside selected folder
+- <kbd>CTRL</kbd> + <kbd>C</kbd> - Finish and print current folder to stdout
+- <kbd>CTRL</kbd> + <kbd>W</kbd> - Clear search
